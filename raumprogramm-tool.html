@@ -178,6 +178,10 @@ function parseNumD1(str){
   return match ? Math.round(parseFloat(match[0])*10)/10 : 0;
 }
 
+/* Verkehrsflächen (%) sind standardmäßig mit 10% vorausgefüllt, solange kein eigener Wert eingetragen wurde. */
+function vp(val){ return (val===undefined || val===null || val==='') ? 10 : parseNum(val); }
+function vpd(val){ return (val===undefined || val===null || val==='') ? '10' : val; }
+
 document.addEventListener('input', function(e){
   if(e.target && e.target.tagName === 'INPUT' && e.target.type === 'number'){
     const val = e.target.value;
@@ -629,7 +633,7 @@ function recalcLobby(){
     rowsHtml += '<tr><td>'+f.label+'</td><td>'+val+' m²</td></tr>';
   }
 
-  const verkehrPct = parseNum(lobby.verkehrsflaeche_pct);
+  const verkehrPct = vp(lobby.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -642,7 +646,7 @@ function recalcLobby(){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" id="verkehr-pct" value="'+(lobby.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" id="verkehr-pct" value="'+vpd(lobby.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div id="info-row-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die innerhalb der Lobby zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -680,6 +684,9 @@ function recalcLobby(){
 }
 
 /* ============ F&B / OUTLETS ============ */
+/* Farbpalette zur visuellen Unterscheidung einzelner F&B Outlets im Dashboard */
+const FNB_OUTLET_COLORS = ['#77704a','#000000','#a67c52','#5b7065','#8c6a4a','#4a5568','#9c9470','#6b4a4a'];
+
 const OUTLET_TYPES = [
   {key:'fruehstueck', label:'Frühstücks Restaurant', kind:'restaurant'},
   {key:'allday', label:'All Day Restaurant', kind:'restaurant'},
@@ -869,7 +876,7 @@ function recalcFnbLager(){
     rowsHtml += '<tr><td>'+f.label+'</td><td>'+val+' m²</td></tr>';
   }
 
-  const verkehrPct = parseNum(lager.verkehrsflaeche_pct);
+  const verkehrPct = vp(lager.verkehrsflaeche_pct);
   const verkehrM2 = total * (verkehrPct/100);
   const gesamt = total + verkehrM2;
 
@@ -882,7 +889,7 @@ function recalcFnbLager(){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-lager-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" id="lager-verkehr-pct" value="'+(lager.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" id="lager-verkehr-pct" value="'+vpd(lager.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div id="info-row-lager-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Lagerräumen führen. Die Angabe erfolgt als Prozentsatz der Lagerfläche (BOH) und wird zur Gesamtfläche addiert.<br><br>'+
@@ -1036,7 +1043,7 @@ function recalcKuecheForIndex(idx, el){
   }
   total += tkTotal;
 
-  const verkehrPct = parseNum(k.fields.verkehrsflaeche_pct);
+  const verkehrPct = vp(k.fields.verkehrsflaeche_pct);
   const verkehrM2 = total * (verkehrPct/100);
   const gesamt = total + verkehrM2;
 
@@ -1049,7 +1056,7 @@ function recalcKuecheForIndex(idx, el){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-kueche-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" class="kueche-verkehr-pct" value="'+(k.fields.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" class="kueche-verkehr-pct" value="'+vpd(k.fields.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div class="info-row-kueche-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Küchenräumen führen. Die Angabe erfolgt als Prozentsatz der Küchenfläche (BOH) und wird zur Gesamtfläche addiert.<br><br>'+
@@ -1309,7 +1316,7 @@ function recalcFnbFlaechenForOutlet(idx, el){
     rowsHtml += '<tr><td>m² Service Pantry (BOH)</td><td>'+v2+' m²</td></tr>';
   }
 
-  const verkehrPct = parseNum(fl.verkehrsflaeche_pct);
+  const verkehrPct = vp(fl.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -1322,7 +1329,7 @@ function recalcFnbFlaechenForOutlet(idx, el){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-fnb-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" class="fnb-verkehr-pct" value="'+(fl.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" class="fnb-verkehr-pct" value="'+vpd(fl.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div class="info-row-fnb-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -1444,7 +1451,7 @@ function recalcRestaurantForOutlet(idx, el){
   publicTotal += servicestationM2;
   rowsHtml += '<tr><td>Service Stationen ('+(r.servicestation.anzahl||0)+'x à 2m²)</td><td>'+servicestationM2+' m²</td></tr>';
 
-  const verkehrPct = parseNum(fields.verkehrsflaeche_pct);
+  const verkehrPct = vp(fields.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -1457,7 +1464,7 @@ function recalcRestaurantForOutlet(idx, el){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-restaurant-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" class="restaurant-verkehr-pct" value="'+(fields.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" class="restaurant-verkehr-pct" value="'+vpd(fields.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div class="info-row-restaurant-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -1573,7 +1580,7 @@ function recalcBarForOutlet(idx, el){
   publicTotal += servicestationM2;
   rowsHtml += '<tr><td>Service Stationen ('+(r.servicestation.anzahl||0)+'x à 2m²)</td><td>'+servicestationM2+' m²</td></tr>';
 
-  const verkehrPct = parseNum(fields.verkehrsflaeche_pct);
+  const verkehrPct = vp(fields.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -1586,7 +1593,7 @@ function recalcBarForOutlet(idx, el){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-bar-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" class="bar-verkehr-pct" value="'+(fields.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" class="bar-verkehr-pct" value="'+vpd(fields.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div class="info-row-bar-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -1703,7 +1710,7 @@ function recalcLoungeForOutlet(idx, el){
   publicTotal += servicestationM2;
   rowsHtml += '<tr><td>Service Stationen ('+(r.servicestation.anzahl||0)+'x à 2m²)</td><td>'+servicestationM2+' m²</td></tr>';
 
-  const verkehrPct = parseNum(fields.verkehrsflaeche_pct);
+  const verkehrPct = vp(fields.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -1716,7 +1723,7 @@ function recalcLoungeForOutlet(idx, el){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-lounge-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" class="lounge-verkehr-pct" value="'+(fields.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" class="lounge-verkehr-pct" value="'+vpd(fields.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div class="info-row-lounge-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -2354,7 +2361,7 @@ function recalcWellnessSummary(){
   }
   if(s.ruheraeume.length>0) addRow('Ruheräume ('+s.ruheraeume.length+'x)', ruheraumTotal, false);
 
-  const verkehrPct = parseNum(data.wellness.verkehrsflaeche_pct);
+  const verkehrPct = vp(data.wellness.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -2367,7 +2374,7 @@ function recalcWellnessSummary(){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-wellness-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" id="wellness-verkehr-pct" value="'+(data.wellness.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" id="wellness-verkehr-pct" value="'+vpd(data.wellness.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div id="info-row-wellness-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -2522,7 +2529,7 @@ function recalcRetail(){
     rowsHtml += '<tr><td>Sonstiges ('+r.sonstiges.length+'x)</td><td>'+sonstigesTotal+' m²</td></tr>';
   }
 
-  const verkehrPct = parseNum(r.fields.verkehrsflaeche_pct);
+  const verkehrPct = vp(r.fields.verkehrsflaeche_pct);
   const verkehrM2 = publicTotal * (verkehrPct/100);
   const gesamt = publicTotal + bohTotal + verkehrM2;
 
@@ -2535,7 +2542,7 @@ function recalcRetail(){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-retail-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" id="retail-verkehr-pct" value="'+(r.fields.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" id="retail-verkehr-pct" value="'+vpd(r.fields.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div id="info-row-retail-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Publikumsbereiche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -2681,7 +2688,7 @@ function recalcInfrastruktur(){
     rowsHtml += '<tr><td>'+f.label+'</td><td>'+val+' m²</td></tr>';
   }
 
-  const verkehrPct = parseNum(data.infrastruktur.verkehrsflaeche_pct);
+  const verkehrPct = vp(data.infrastruktur.verkehrsflaeche_pct);
   const verkehrM2 = total * (verkehrPct/100);
   const gesamt = total + verkehrM2;
 
@@ -2694,7 +2701,7 @@ function recalcInfrastruktur(){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-infra-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" id="infra-verkehr-pct" value="'+(data.infrastruktur.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" id="infra-verkehr-pct" value="'+vpd(data.infrastruktur.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div id="info-row-infra-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Infrastruktur- &amp; BOH-Fläche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -2748,7 +2755,7 @@ const ABTEILUNGEN = [
 ];
 
 const ROLLEN_10 = [
-  {key:'generalmanager', label:'General Manager'},
+  {key:'generalmanager', label:'Hotel Manager'},
   {key:'operationsmanager', label:'Operations Manager'},
   {key:'directorrooms', label:'Director of Rooms'},
   {key:'directorfinance', label:'Director of Finance'},
@@ -2774,7 +2781,7 @@ function renderArbeitsplaetze(){
   let abteilungenHtml = '';
   for(let i=0;i<ABTEILUNGEN.length;i++){
     const f = ABTEILUNGEN[i];
-    const abt = ap.abteilungen[f.key] || {anzahl:'', drucker:false};
+    const abt = ap.abteilungen[f.key] || {anzahl:'', drucker:true};
     abteilungenHtml += '<div style="padding:14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;">'+
       '<label style="margin:0;display:block;">Anzahl Arbeitsplätze '+f.label+'<input type="number" class="abt-anzahl" data-key="'+f.key+'" min="0" step="1" value="'+(abt.anzahl||'')+'" placeholder="z. B. 3" style="margin-top:6px;"></label>'+
       '<label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-top:10px;cursor:pointer;text-transform:none;font-weight:400;"><input type="checkbox" class="abt-drucker" data-key="'+f.key+'" style="width:auto;" '+(abt.drucker?'checked':'')+'> Fläche für Drucker</label>'+
@@ -2794,7 +2801,7 @@ function renderArbeitsplaetze(){
       '<p class="hint">Alle Flächen in diesem Abschnitt sind Back of House (BOH).</p>'+
       '<div style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">Führungsebene &amp; Direktion</div>'+
       '<div style="padding:14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;">'+
-        '<label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;cursor:pointer;"><input type="checkbox" id="buerogm-check" style="width:auto;" '+(ap.buerogm?'checked':'')+'> Büro General Manager <button class="info-toggle-buerogm info-btn" title="Berechnung anzeigen">i</button></label>'+
+        '<label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;cursor:pointer;"><input type="checkbox" id="buerogm-check" style="width:auto;" '+(ap.buerogm?'checked':'')+'> Büro Hotel Manager <button class="info-toggle-buerogm info-btn" title="Berechnung anzeigen">i</button></label>'+
         '<div id="info-row-buerogm" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">10 m² Arbeitsplatz + 1 m² Druckerbereich + 6 m² Besprechungstisch inkl. Stühle = 17 m²</div>'+
       '</div>'+
       '<div style="padding:14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;">'+
@@ -2826,7 +2833,7 @@ function renderArbeitsplaetze(){
   const abtAnzahlInputs = contentEl.querySelectorAll('.abt-anzahl');
   for(let i=0;i<abtAnzahlInputs.length;i++){
     abtAnzahlInputs[i].addEventListener('input', function(){
-      if(!ap.abteilungen[this.dataset.key]) ap.abteilungen[this.dataset.key] = {anzahl:'', drucker:false};
+      if(!ap.abteilungen[this.dataset.key]) ap.abteilungen[this.dataset.key] = {anzahl:'', drucker:true};
       ap.abteilungen[this.dataset.key].anzahl = this.value;
       updateAbteilungResults();
       recalcArbeitsplaetze();
@@ -2835,7 +2842,7 @@ function renderArbeitsplaetze(){
   const abtDruckerInputs = contentEl.querySelectorAll('.abt-drucker');
   for(let i=0;i<abtDruckerInputs.length;i++){
     abtDruckerInputs[i].addEventListener('change', function(){
-      if(!ap.abteilungen[this.dataset.key]) ap.abteilungen[this.dataset.key] = {anzahl:'', drucker:false};
+      if(!ap.abteilungen[this.dataset.key]) ap.abteilungen[this.dataset.key] = {anzahl:'', drucker:true};
       ap.abteilungen[this.dataset.key].drucker = this.checked;
       updateAbteilungResults();
       recalcArbeitsplaetze();
@@ -2876,7 +2883,7 @@ function updateAbteilungResults(){
   const ap = data.arbeitsplaetze;
   for(let i=0;i<ABTEILUNGEN.length;i++){
     const f = ABTEILUNGEN[i];
-    const abt = ap.abteilungen[f.key] || {anzahl:'', drucker:false};
+    const abt = ap.abteilungen[f.key] || {anzahl:'', drucker:true};
     const c = calcAbteilung(f, abt);
     const box = document.querySelector('.abt-result[data-key="'+f.key+'"]');
     if(box){
@@ -2897,13 +2904,13 @@ function recalcArbeitsplaetze(){
 
   for(let i=0;i<ABTEILUNGEN.length;i++){
     const f = ABTEILUNGEN[i];
-    const abt = ap.abteilungen[f.key] || {anzahl:'', drucker:false};
+    const abt = ap.abteilungen[f.key] || {anzahl:'', drucker:true};
     const c = calcAbteilung(f, abt);
     total += c.total;
     if(c.anzahl>=1) rowsHtml += '<tr><td>'+f.label+' ('+c.anzahl+'x)</td><td>'+c.total+' m²</td></tr>';
   }
 
-  if(ap.buerogm){ total += 17; rowsHtml += '<tr><td>Büro General Manager</td><td>17 m²</td></tr>'; }
+  if(ap.buerogm){ total += 17; rowsHtml += '<tr><td>Büro Hotel Manager</td><td>17 m²</td></tr>'; }
   if(ap.gmassistant){ total += 8; rowsHtml += '<tr><td>GM Assistant</td><td>8 m²</td></tr>'; }
 
   for(let i=0;i<ROLLEN_10.length;i++){
@@ -2923,7 +2930,7 @@ function recalcArbeitsplaetze(){
   if(ap.wcDamen){ total += 2; rowsHtml += '<tr><td>WC | Damen</td><td>2 m²</td></tr>'; }
   if(ap.wcHerren){ total += 2; rowsHtml += '<tr><td>WC | Herren</td><td>2 m²</td></tr>'; }
 
-  const verkehrPct = parseNum(ap.fields.verkehrsflaeche_pct);
+  const verkehrPct = vp(ap.fields.verkehrsflaeche_pct);
   const verkehrM2 = total * (verkehrPct/100);
   const gesamt = total + verkehrM2;
 
@@ -2936,7 +2943,7 @@ function recalcArbeitsplaetze(){
     '<div style="padding:12px 14px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">'+
         '<span style="font-size:12px;font-weight:600;color:var(--primary);text-transform:uppercase;">Verkehrsflächen (%) <button class="info-toggle-ap-verkehr info-btn" title="Erklärung anzeigen">i</button></span>'+
-        '<input type="text" inputmode="numeric" id="ap-verkehr-pct" value="'+(ap.fields.verkehrsflaeche_pct||'')+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
+        '<input type="text" inputmode="numeric" id="ap-verkehr-pct" value="'+vpd(ap.fields.verkehrsflaeche_pct)+'" placeholder="z. B. 10" style="width:90px;text-align:right;">'+
       '</div>'+
       '<div id="info-row-ap-verkehr" style="display:none;margin-top:10px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;line-height:1.6;">'+
         'Verkehrsflächen sind Flure und Gänge, die zu den einzelnen Räumen führen. Die Angabe erfolgt als Prozentsatz der Arbeitsplatzfläche und wird zur Gesamtfläche addiert.<br><br>'+
@@ -2979,7 +2986,14 @@ function getZimmerDetail(){
     const kat = data.zimmer[i];
     const c = calcKategorieFlaeche(kat);
     total += c.gesamt;
-    if(c.gesamt>0) rows.push({label:(kat.name||'Kategorie '+(i+1))+' ('+c.anzahl+'x)', val:c.gesamt});
+    if(c.gesamt>0){
+      rows.push({label:(kat.name||'Kategorie '+(i+1))+' ('+c.anzahl+'x)', val:c.gesamt});
+      const wohnTotal = c.wohn*c.anzahl, badTotal = c.bad*c.anzahl, wcTotal = c.wc*c.anzahl, balkonTotal = c.balkon*c.anzahl;
+      if(wohnTotal>0) rows.push({label:'  &gt;Wohnraum', val:wohnTotal});
+      if(badTotal>0) rows.push({label:'  &gt;Bad', val:badTotal});
+      if(wcTotal>0) rows.push({label:'  &gt;WC (separat)', val:wcTotal});
+      if(balkonTotal>0) rows.push({label:'  &gt;Balkon', val:balkonTotal});
+    }
   }
   return {total:total, pub:total, boh:0, rows:rows};
 }
@@ -2988,25 +3002,35 @@ function getFlurDetail(){
   const flurBreite = parseNum(data.flur.breite);
   const anordnung = data.flur.anordnung;
   let total=0; const rows=[];
+  let flurSumme=0;
   if(flurBreite && anordnung){
     for(let i=0;i<data.zimmer.length;i++){
       const kat = data.zimmer[i];
       const front = getFrontBreite(kat);
       const anzahl = parseNum(kat.anzahl);
       const val = front*flurBreite*anzahl;
-      total += val;
-      if(val>0) rows.push({label:'Flur '+(kat.name||'Kategorie '+(i+1)), val:val});
+      flurSumme += val;
     }
   }
+  total += flurSumme;
+  if(flurSumme>0) rows.push({label:'Gästeflure', val:flurSumme});
   const lift = parseNum(data.flur.liftLobby)*parseNum(data.flur.etagen);
   total += lift;
   if(lift>0) rows.push({label:'Lift Lobby', val:lift});
-  return {total:total, pub:total, boh:0, rows:rows};
+  const info=[];
+  if(flurBreite>0) info.push('Flurbreite: '+flurBreite+' m');
+  return {total:total, pub:total, boh:0, rows:rows, info:info};
 }
 
 function getBohAllgemeinDetail(){
   const val = parseNum(data.boh.housekeepingQm) * parseNum(data.flur.etagen);
-  return {total:val, pub:0, boh:val, rows: val>0?[{label:'Housekeeping Pantry (alle Etagen)', val:val}]:[]};
+  const rows = val>0?[{label:'Housekeeping Pantry (alle Etagen)', val:val}]:[];
+  const info=[];
+  const gaestelifte = parseNum(data.boh.gaestelifte);
+  if(gaestelifte>0) info.push('Anzahl Gästelifte: '+gaestelifte+(data.wellness.liftzugang?' (mind. 1 mit direktem Zugang zum SPA & Wellness Bereich)':''));
+  const servicelifte = parseNum(data.boh.servicelifte);
+  if(servicelifte>0) info.push('Anzahl Servicelifte: '+servicelifte+(data.boh.serviceLiftZugang?' (direkter Zugang zum Service Lift)':''));
+  return {total:val, pub:0, boh:val, rows:rows, info:info};
 }
 
 function getLobbyDetail(){
@@ -3017,7 +3041,7 @@ function getLobbyDetail(){
     if(val>0) rows.push({label:f.label, val:val});
     if(f.boh) boh+=val; else pub+=val;
   }
-  const verkehr = pub*(parseNum(lobby.verkehrsflaeche_pct)/100);
+  const verkehr = pub*(vp(lobby.verkehrsflaeche_pct)/100);
   if(verkehr>0) rows.push({label:'Verkehrsflächen', val:verkehr});
   pub += verkehr;
   return {total:pub+boh, pub:pub, boh:boh, rows:rows};
@@ -3030,32 +3054,33 @@ function getFnbDetail(){
     const info = outletTypeInfo(outlet.type);
     const prefix = info.label+' #'+(o+1)+' – ';
     let outletPub=0, outletBoh=0;
+    function pushRow(label, val){ if(val>0) rows.push({label:prefix+label, val:val, outletIdx:o}); }
 
     if(info.kind==='meeting_events'){
       for(let i=0;i<outlet.meetingRooms.length;i++){
         const room = outlet.meetingRooms[i];
         const val = parseNum(room.qm);
         outletPub += val;
-        if(val>0) rows.push({label:prefix+roomTypeLabel(room.type)+' #'+(i+1), val:val});
+        pushRow(roomTypeLabel(room.type)+' #'+(i+1), val);
       }
       const fl=outlet.flaechen;
       for(let i=0;i<FNB_FIELDS.length;i++){
         const f=FNB_FIELDS[i]; const val=parseNum(fl[f.key]);
         if(f.boh) outletBoh+=val; else outletPub+=val;
-        if(val>0) rows.push({label:prefix+f.label, val:val});
+        pushRow(f.label, val);
       }
       if(outlet.pantryKombiniert){
         const v=parseNum(fl.pantry_kombi); outletBoh+=v;
-        if(v>0) rows.push({label:prefix+'Küchen-/Service Pantry kombiniert', val:v});
+        pushRow('Küchen-/Service Pantry kombiniert', v);
       } else {
         const v1=parseNum(fl.kuechenpantry), v2=parseNum(fl.servicepantry);
         outletBoh+=v1+v2;
-        if(v1>0) rows.push({label:prefix+'Küchen Pantry', val:v1});
-        if(v2>0) rows.push({label:prefix+'Service Pantry', val:v2});
+        pushRow('Küchen Pantry', v1);
+        pushRow('Service Pantry', v2);
       }
-      const vpct=parseNum(fl.verkehrsflaeche_pct);
+      const vpct=vp(fl.verkehrsflaeche_pct);
       const vm2=outletPub*(vpct/100);
-      if(vm2>0) rows.push({label:prefix+'Verkehrsflächen', val:vm2});
+      pushRow('Verkehrsflächen', vm2);
       outletPub += vm2;
     } else if(info.kind==='restaurant' || info.kind==='bar' || info.kind==='lounge'){
       const r = outlet[info.kind];
@@ -3064,25 +3089,25 @@ function getFnbDetail(){
       for(let i=0;i<FIELDLIST.length;i++){
         const f=FIELDLIST[i]; const val=parseNum(fields[f.key]);
         if(f.boh) outletBoh+=val; else outletPub+=val;
-        if(val>0) rows.push({label:prefix+f.label, val:val});
+        pushRow(f.label, val);
       }
       const sitzM2 = calcSitzbereich(r.sitzbereich);
       outletPub += sitzM2;
-      if(sitzM2>0) rows.push({label:prefix+'Sitzbereich', val:sitzM2});
+      pushRow('Sitzbereich', sitzM2);
       const ssAnzahl = parseNum(r.servicestation.anzahl);
       const ssM2 = ssAnzahl*2;
       outletPub += ssM2;
-      if(ssM2>0) rows.push({label:prefix+'Service Stationen ('+ssAnzahl+'x)', val:ssM2});
-      const vpct=parseNum(fields.verkehrsflaeche_pct);
+      pushRow('Service Stationen ('+ssAnzahl+'x)', ssM2);
+      const vpct=vp(fields.verkehrsflaeche_pct);
       const vm2=outletPub*(vpct/100);
-      if(vm2>0) rows.push({label:prefix+'Verkehrsflächen', val:vm2});
+      pushRow('Verkehrsflächen', vm2);
       outletPub += vm2;
     } else if(info.kind==='roomservice'){
       const fields=outlet.roomservice.fields;
       for(let i=0;i<ROOMSERVICE_FIELDS.length;i++){
         const f=ROOMSERVICE_FIELDS[i]; const val=parseNum(fields[f.key]);
         outletBoh+=val;
-        if(val>0) rows.push({label:prefix+f.label, val:val});
+        pushRow(f.label, val);
       }
     }
     pub+=outletPub; boh+=outletBoh;
@@ -3094,10 +3119,15 @@ function getFnbDetail(){
     if(val>0) rows.push({label:'Lager – '+f.label, val:val});
   }
   const lagerBase = (function(){ let t=0; for(let i=0;i<FNB_LAGER_FIELDS.length;i++) t+=parseNum(data.fnb.lager[FNB_LAGER_FIELDS[i].key]); return t; })();
-  const lagerVerkehr = lagerBase*(parseNum(data.fnb.lager.verkehrsflaeche_pct)/100);
+  const lagerVerkehr = lagerBase*(vp(data.fnb.lager.verkehrsflaeche_pct)/100);
   boh += lagerVerkehr;
   if(lagerVerkehr>0) rows.push({label:'Lager – Verkehrsflächen', val:lagerVerkehr});
 
+  return {total:pub+boh, pub:pub, boh:boh, rows:rows};
+}
+
+function getKuechenDetail(){
+  let boh=0; const rows=[];
   for(let k=0;k<data.fnb.kuechen.length;k++){
     const ku=data.fnb.kuechen[k];
     let kt=0;
@@ -3111,11 +3141,11 @@ function getFnbDetail(){
       kt+=val; boh+=val;
       if(val>0) rows.push({label:'Küche '+(k+1)+' – Tiefkühlhaus '+(i+1), val:val});
     }
-    const kv=kt*(parseNum(ku.fields.verkehrsflaeche_pct)/100);
+    const kv=kt*(vp(ku.fields.verkehrsflaeche_pct)/100);
     boh += kv;
     if(kv>0) rows.push({label:'Küche '+(k+1)+' – Verkehrsflächen', val:kv});
   }
-  return {total:pub+boh, pub:pub, boh:boh, rows:rows};
+  return {total:boh, pub:0, boh:boh, rows:rows};
 }
 
 function getWellnessDetail(){
@@ -3189,12 +3219,20 @@ function getWellnessDetail(){
     if(val>0) rows.push({label:'Ruheraum '+(i+1), val:val});
   }
 
-  const verkehrPct = parseNum(data.wellness.verkehrsflaeche_pct);
+  const verkehrPct = vp(data.wellness.verkehrsflaeche_pct);
   const verkehrM2 = pub * (verkehrPct/100);
   if(verkehrM2>0) rows.push({label:'Verkehrsflächen', val:verkehrM2});
   pub += verkehrM2;
 
-  return {total:pub+boh, pub:pub, boh:boh, rows:rows};
+  const info=[];
+  info.push('SPA Rezeption & Bistro: '+(t.eingangKombiniert?'kombiniert':'getrennt'));
+  const ausstattung=[];
+  if(s.tauchbecken) ausstattung.push('Tauchbecken');
+  if(s.eisbrunnen) ausstattung.push('Eisbrunnen');
+  if(s.trinkbrunnen) ausstattung.push('Trinkbrunnen');
+  if(ausstattung.length>0) info.push('Ausstattung Sauna: '+ausstattung.join(', '));
+
+  return {total:pub+boh, pub:pub, boh:boh, rows:rows, info:info};
 }
 
 function getRetailDetail(){
@@ -3216,10 +3254,11 @@ function getRetailDetail(){
   let sonstTotal=0;
   for(let i=0;i<r.sonstiges.length;i++) sonstTotal+=parseNum(r.sonstiges[i].qm);
   if(sonstTotal>0){ pub+=sonstTotal; rows.push({label:'Sonstiges ('+r.sonstiges.length+'x)', val:sonstTotal}); }
-  const verkehr=pub*(parseNum(r.fields.verkehrsflaeche_pct)/100);
+  const verkehr=pub*(vp(r.fields.verkehrsflaeche_pct)/100);
   if(verkehr>0){ rows.push({label:'Verkehrsflächen', val:verkehr}); }
   pub+=verkehr;
-  return {total:pub+boh, pub:pub, boh:boh, rows:rows};
+  const info=['Bikeverleih: '+(r.bikeKombiniert?'inkl. Werkstatt':'exkl. Werkstatt (separat)')];
+  return {total:pub+boh, pub:pub, boh:boh, rows:rows, info:info};
 }
 
 function getInfrastrukturDetail(){
@@ -3229,27 +3268,30 @@ function getInfrastrukturDetail(){
     const f=ANLIEFERUNG_FIELDS[i]; const val=parseNum(a.fields[f.key]);
     total+=val; if(val>0) rows.push({label:f.label, val:val});
   }
+  const muellLabel = a.muellTyp === 'konfiskatkuehler' ? 'Konfiskatkühler' : (a.muellTyp === 'kuehlhaus' ? 'Kühlhaus' : '–');
   const muellVal=parseNum(a.fields.muellraum);
   total+=muellVal;
-  if(muellVal>0) rows.push({label:'m² Müllraum', val:muellVal});
+  if(muellVal>0) rows.push({label:'m² Müllraum ('+muellLabel+')', val:muellVal});
   for(let i=0;i<BOH_PERSONAL_FIELDS.length;i++){
     const f=BOH_PERSONAL_FIELDS[i]; const val=parseNum(b.fields[f.key]);
     total+=val; if(val>0) rows.push({label:f.label, val:val});
   }
-  const verkehr=total*(parseNum(data.infrastruktur.verkehrsflaeche_pct)/100);
+  const verkehr=total*(vp(data.infrastruktur.verkehrsflaeche_pct)/100);
   if(verkehr>0) rows.push({label:'Verkehrsflächen', val:verkehr});
-  return {total:total+verkehr, pub:0, boh:total+verkehr, rows:rows};
+  const info=[];
+  if(a.muellTyp) info.push('Müllraum: '+muellLabel);
+  return {total:total+verkehr, pub:0, boh:total+verkehr, rows:rows, info:info};
 }
 
 function getArbeitsplaetzeDetail(){
   const ap=data.arbeitsplaetze; let total=0; const rows=[];
   for(let i=0;i<ABTEILUNGEN.length;i++){
-    const f=ABTEILUNGEN[i]; const abt=ap.abteilungen[f.key]||{anzahl:'',drucker:false};
+    const f=ABTEILUNGEN[i]; const abt=ap.abteilungen[f.key]||{anzahl:'',drucker:true};
     const c=calcAbteilung(f,abt);
     total+=c.total;
     if(c.anzahl>=1) rows.push({label:f.label+' ('+c.anzahl+'x)', val:c.total});
   }
-  if(ap.buerogm){ total+=17; rows.push({label:'Büro General Manager', val:17}); }
+  if(ap.buerogm){ total+=17; rows.push({label:'Büro Hotel Manager', val:17}); }
   if(ap.gmassistant){ total+=8; rows.push({label:'GM Assistant', val:8}); }
   for(let i=0;i<ROLLEN_10.length;i++){
     const f=ROLLEN_10[i];
@@ -3264,9 +3306,11 @@ function getArbeitsplaetzeDetail(){
   }
   if(ap.wcDamen){ total+=2; rows.push({label:'WC | Damen', val:2}); }
   if(ap.wcHerren){ total+=2; rows.push({label:'WC | Herren', val:2}); }
-  const verkehr=total*(parseNum(ap.fields.verkehrsflaeche_pct)/100);
+  const verkehr=total*(vp(ap.fields.verkehrsflaeche_pct)/100);
   if(verkehr>0) rows.push({label:'Verkehrsflächen', val:verkehr});
-  return {total:total+verkehr, pub:0, boh:total+verkehr, rows:rows};
+  const info=[];
+  if(ap.gmassistant && ap.gmassistantIntegriert) info.push('GM Assistant Arbeitsplatz kann in einem anderen Büro integriert werden (kein separater Raum nötig)');
+  return {total:total+verkehr, pub:0, boh:total+verkehr, rows:rows, info:info};
 }
 
 function getOutletSummaryLine(outlet, info){
@@ -3383,6 +3427,18 @@ function generateDashboardPDF(d, kategorien, roomCount, parkplaetzeTotal, ngfTot
       doc.setFontSize(10.5);
       doc.setTextColor(0,0,0);
     }
+    const infoList = kategorien[i].detail.info||[];
+    for(let ii=0;ii<infoList.length;ii++){
+      checkPage();
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(90,86,60);
+      const infoLines = doc.splitTextToSize('i  '+infoList[ii].replace(/&gt;/g,'>').replace(/&amp;/g,'&'), 155);
+      for(let l=0;l<infoLines.length;l++){ checkPage(); doc.text(infoLines[l], marginLeft+4, y); y += 5; }
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10.5);
+      doc.setTextColor(0,0,0);
+    }
     y += 2;
   }
 
@@ -3426,6 +3482,7 @@ function renderDashboard(){
     {key:'bohallg', label:'Allg. & BOH (Etagen)', detail:getBohAllgemeinDetail()},
     {key:'lobby', label:'Öffentliche Bereiche', detail:getLobbyDetail()},
     {key:'fnb', label:'F&B', detail:getFnbDetail()},
+    {key:'kuechen', label:'Küchen', detail:getKuechenDetail()},
     {key:'wellness', label:'Wellness & Spa', detail:getWellnessDetail()},
     {key:'retail', label:'Retail & Sonstiges', detail:getRetailDetail()},
     {key:'infra', label:'Infrastruktur & BOH', detail:getInfrastrukturDetail()},
@@ -3449,9 +3506,23 @@ function renderDashboard(){
     const color = i%2===0 ? 'var(--primary)' : 'var(--accent-brown)';
     let rowsHtml = '';
     for(let r=0;r<k.detail.rows.length;r++){
-      rowsHtml += '<tr><td>'+k.detail.rows[r].label+'</td><td>'+Math.round(k.detail.rows[r].val)+' m²</td></tr>';
+      const row = k.detail.rows[r];
+      let swatch = '';
+      if(k.key==='fnb' && row.outletIdx!==undefined){
+        const oc = FNB_OUTLET_COLORS[row.outletIdx % FNB_OUTLET_COLORS.length];
+        swatch = '<span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+oc+';margin-right:6px;flex-shrink:0;"></span>';
+      }
+      rowsHtml += '<tr><td style="display:flex;align-items:center;">'+swatch+row.label+'</td><td>'+Math.round(row.val)+' m²</td></tr>';
     }
     if(k.detail.rows.length===0) rowsHtml = '<tr><td colspan="2" style="color:var(--text-muted);">Noch keine Werte erfasst</td></tr>';
+
+    const infoList = k.detail.info||[];
+    let infoHtml = '';
+    if(infoList.length>0){
+      let liHtml = '';
+      for(let ii=0;ii<infoList.length;ii++){ liHtml += '<li style="margin-bottom:3px;">'+infoList[ii]+'</li>'; }
+      infoHtml = '<ul style="margin:10px 0 0;padding-left:18px;">'+liHtml+'</ul>';
+    }
 
     barsHtml += '<div style="margin-bottom:14px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:4px;cursor:pointer;" class="dash-toggle" data-key="'+k.key+'">'+
@@ -3460,7 +3531,7 @@ function renderDashboard(){
       '</div>'+
       '<div style="background:var(--border);border-radius:6px;height:14px;overflow:hidden;"><div style="background:'+color+';height:100%;width:'+pct+'%;border-radius:6px;"></div></div>'+
       '<div class="dash-detail" id="dash-detail-'+k.key+'" style="display:none;margin-top:8px;padding:10px 12px;background:#f0eee5;border:1px solid var(--border);border-radius:8px;font-size:11.5px;color:#4a4636;">'+
-        '<table>'+rowsHtml+'</table>'+
+        '<table>'+rowsHtml+'</table>'+infoHtml+
       '</div>'+
     '</div>';
   }
