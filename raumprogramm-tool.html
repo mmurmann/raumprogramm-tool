@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
@@ -62,6 +63,29 @@
     .stepper,footer.nav-buttons,header.top{display:none !important;}
     .dash-detail{display:block !important;}
     .dash-expand-btn{display:none !important;}
+  }
+  @media (max-width:600px){
+    .app{padding:16px 14px 32px;}
+    header.top{margin-bottom:18px;padding-bottom:14px;}
+    header.top img.brand-logo{width:140px;height:23px;}
+    .stepper{gap:2px 0;margin-bottom:18px;padding:6px 0 8px;}
+    .step-item{min-width:54px;padding:0 4px 8px;}
+    .step-dot{width:24px;height:24px;font-size:11px;}
+    .step-label{font-size:9px;max-width:56px;}
+    .card{padding:20px 16px;border-radius:6px;}
+    .card h2{font-size:18px;}
+    .card .hint{font-size:12.5px;}
+    .form-grid{grid-template-columns:1fr;gap:16px;}
+    .field-row{flex-direction:column;align-items:flex-start;gap:8px;padding:14px 0;}
+    .field-row .field-label{flex:0 0 auto;}
+    .field-row input,.field-row select{max-width:100%;width:100%;}
+    input,select{width:100%;min-width:0;}
+    button{padding:11px 16px;font-size:12px;}
+    footer.nav-buttons{gap:8px;}
+    .dash-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+    .card{overflow-x:auto;}
+    table{min-width:420px;}
+    #modal,#outlet-modal,#room-modal{min-width:0 !important;width:88vw !important;max-width:400px !important;padding:22px !important;}
   }
 </style>
 </head>
