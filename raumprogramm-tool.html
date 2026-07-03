@@ -3366,7 +3366,12 @@ async function generateDashboardPDF(){
   await new Promise(function(r){ setTimeout(r, 80); });
 
   try {
-    const canvas = await html2canvas(contentEl, {scale:2, backgroundColor:'#f5f5f5', useCORS:true});
+    const canvas = await html2canvas(contentEl, {scale:2, backgroundColor:'#f5f5f5', useCORS:true, onclone:function(clonedDoc){
+      /* Verhindert, dass die .card fadeIn-Animation im geklonten DOM neu startet und das PDF blass/trüb aussehen lässt */
+      const style = clonedDoc.createElement('style');
+      style.textContent = '*{animation:none !important;transition:none !important;} .card{opacity:1 !important;transform:none !important;}';
+      clonedDoc.head.appendChild(style);
+    }});
 
     const doc = new window.jspdf.jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
