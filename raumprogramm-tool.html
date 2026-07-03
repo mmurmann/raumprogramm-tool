@@ -9,7 +9,8 @@
   *{box-sizing:border-box;}
   body{margin:0;font-family:'Inter',sans-serif;background:var(--bg-light);color:var(--text-dark);}
   .app{max-width:920px;margin:0 auto;padding:24px 20px 40px;}
-  header.top{display:flex;align-items:center;justify-content:center;margin-bottom:28px;}
+  header.top{display:flex;align-items:center;justify-content:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+  header.top img.brand-logo{display:block;width:173px;height:28px;}
   h1.title{font-size:28px;font-weight:800;margin:0;color:var(--primary);text-transform:uppercase;font-family:'Poppins',sans-serif;letter-spacing:0.02em;}
   .stepper{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 0;margin-bottom:28px;border-bottom:2px solid var(--border);padding:8px 0 12px;}
   .step-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 10px 10px;cursor:default;position:relative;min-width:72px;}
@@ -66,6 +67,11 @@
 </head>
 <body>
 <div class="app">
+  <header class="top">
+    <a href="https://www.mamuhospitality.com" target="_blank" rel="noopener noreferrer" aria-label="mamu hospitality Homepage">
+      <img class="brand-logo" src="https://static.wixstatic.com/media/32f937_dafd99036a0b4b9792ce70e00d9760d5~mv2.png/v1/fill/w_520,h_84,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/32f937_dafd99036a0b4b9792ce70e00d9760d5~mv2.png" alt="mamu hospitality" width="173" height="28">
+    </a>
+  </header>
   <nav class="stepper" id="stepper"></nav>
   <main id="stepContent"></main>
   <footer class="nav-buttons">
